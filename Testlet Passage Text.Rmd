@@ -1,0 +1,37 @@
+---
+title: "text_cleaning"
+output: html_document
+---
+
+```{r}
+library(readr)
+Testlet_Passage_Text <- read_csv("~/CA_PassageText/Testlet Passage Text.csv")
+library(readxl)
+Item_Text_Extract_120519 <- read_excel("Item Text Extract 120519.xlsx", 
+    sheet = "Extract All Text")
+View(Item_Text_Extract_120519)
+
+library(janitor)
+Testlet_Passage_Text<-clean_names(Testlet_Passage_Text)
+
+Testlet_Passage_Text$text_v2 <- gsub("<[^>]+>", " ", Testlet_Passage_Text$text)
+Testlet_Passage_Text<-as.data.frame(Testlet_Passage_Text)
+
+Testlet_Passage_Text_v2 <- aggregate(text_v2 ~ testlet_code, data = Testlet_Passage_Text, paste, collapse = " ")
+
+Testlet_Passage_Text_v2$text_v3<-gsub("&#8217;", "'", Testlet_Passage_Text_v2$text_v2)
+Testlet_Passage_Text_v2$text_v3<-gsub("&#8220;", '"', Testlet_Passage_Text_v2$text_v3)
+Testlet_Passage_Text_v2$text_v3<-gsub("攼㸹", 'e', Testlet_Passage_Text_v2$text_v3)
+Testlet_Passage_Text_v2$text_v3<-gsub("&ndash;", '-', Testlet_Passage_Text_v2$text_v3)
+Testlet_Passage_Text_v2$text_v3<-gsub("&mdash;", '-', Testlet_Passage_Text_v2$text_v3)
+Testlet_Passage_Text_v2$text_v3<-gsub(",&#8221;", ',"', Testlet_Passage_Text_v2$text_v3)
+Testlet_Passage_Text_v2$text_v3<-gsub("&#8221;?", ',?', Testlet_Passage_Text_v2$text_v3)
+Testlet_Passage_Text_v2$text_v3<-gsub("㤼㸶", '-', Testlet_Passage_Text_v2$text_v3)
+Testlet_Passage_Text_v2$text_v3<-gsub("&#233;", 'e', Testlet_Passage_Text_v2$text_v3)
+
+#Testlet_Passage_Text_v2$text_v3<-str_trim(Testlet_Passage_Text_v2$text_v3)
+Testlet_Passage_Text_v2$text_v3<-str_squish(Testlet_Passage_Text_v2$text_v3)
+
+```
+
+

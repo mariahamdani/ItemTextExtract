@@ -1,0 +1,48 @@
+---
+title: "ItemTextExtract120519"
+author: "Maria Hamdani"
+date: "December 5, 2019"
+output: html_document
+---
+
+
+```{r}
+install.packages("xlsx")
+library(readr)
+library(readxl)
+Item_Text_Extract_120519 <- read_excel("Item Text Extract 120519.xlsx", 
+    sheet = "Extract All Text")
+View(Item_Text_Extract_120519)
+
+library(janitor)
+Item_Text_Extract_120519<-clean_names(Item_Text_Extract_120519)
+
+Item_Text_Extract_120519$text_v2 <- gsub("<[^>]+>", " ", Item_Text_Extract_120519$text)
+Item_Text_Extract_120519<-as.data.frame(Item_Text_Extract_120519)
+
+Item_Text_Extract_120519_v2 <- aggregate(text_v2 ~ item_code, data = Item_Text_Extract_120519, paste, collapse = " ")
+
+Item_Text_Extract_120519_v2$text_v3<-gsub("&#8217;", "'", Item_Text_Extract_120519_v2$text_v2)
+Item_Text_Extract_120519_v2$text_v3<-gsub("&nsbp;", "'", Item_Text_Extract_120519_v2$text_v2)
+Item_Text_Extract_120519_v2$text_v3<-gsub("&ldquo;", ',"', Item_Text_Extract_120519_v2$text_v2)
+Item_Text_Extract_120519_v2$text_v3<-gsub("&rsquo;", ',"', Item_Text_Extract_120519_v2$text_v2)
+Item_Text_Extract_120519_v2$text_v3<-gsub("&#8220;", '"', Item_Text_Extract_120519_v2$text_v3)
+Item_Text_Extract_120519_v2$text_v3<-gsub("攼㸹", 'e', Item_Text_Extract_120519_v2$text_v3)
+Item_Text_Extract_120519_v2$text_v3<-gsub("&ndash;", '-', Item_Text_Extract_120519_v2$text_v3)
+Item_Text_Extract_120519_v2$text_v3<-gsub("&mdash;", '-', Item_Text_Extract_120519_v2$text_v3)
+Item_Text_Extract_120519_v2$text_v3<-gsub(",&#8221;", ',"', Item_Text_Extract_120519_v2$text_v3)
+Item_Text_Extract_120519_v2$text_v3<-gsub("&#8221;?", ',?', Item_Text_Extract_120519_v2$text_v3)
+Item_Text_Extract_120519_v2$text_v3<-gsub("㤼㸶", '-', Item_Text_Extract_120519_v2$text_v3)
+Item_Text_Extract_120519_v2$text_v3<-gsub("&#233;", 'e', Item_Text_Extract_120519_v2$text_v3)
+
+
+Item_Text_Extract_120519_v2$text_v3<-str_trim(Item_Text_Extract_120519_v2$text_v3)
+Item_Text_Extract_120519_v2$text_v3<-str_squish(Item_Text_Extract_120519_v2$text_v3)
+
+#Create final Excel doc
+write.xlsx(Item_Text_Extract_120519_v2$text_v3, file = "Item_Text_Extract_120519_Clean.xlsx", sheetName = "Item Extract", 
+  col.names = TRUE, row.names = TRUE, append = FALSE)
+
+```
+
+
